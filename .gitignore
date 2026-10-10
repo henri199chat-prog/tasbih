@@ -1,1 +1,11 @@
 screenshots/
+*.apk
+*.aab
+# Android signing secrets — never commit
+*.jks
+*.keystore
+keystore.properties
+keystore/
+android-app/node_modules/
+android-app/www/
+android-app/android/local.properties

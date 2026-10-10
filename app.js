@@ -25,7 +25,20 @@
 
   const $ = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
-  const vibrate = p => { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} };
+  // In the Android app (Capacitor) use the native Haptics plugin; on the web use the Vibration API.
+  const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  const Haptics = NATIVE && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics;
+  function vibrate(p) {
+    try {
+      if (Haptics) {
+        const seq = Array.isArray(p) ? p : [p];
+        let t = 0;
+        seq.forEach((d, i) => { if (i % 2 === 0) setTimeout(() => Haptics.vibrate({ duration: d }).catch(() => {}), t); t += d; });
+        return;
+      }
+      if (navigator.vibrate) navigator.vibrate(p);
+    } catch (e) {}
+  }
 
   let toastTimer;
   function toast(msg) {
@@ -181,7 +194,7 @@
   const h = location.hash.slice(1);
   if (['tasbih', 'morning', 'evening'].includes(h)) showView(h);
 
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  if ('serviceWorker' in navigator && location.protocol !== 'file:' && !NATIVE) { // the APK bundles files locally, no SW needed
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
   }
 })();
