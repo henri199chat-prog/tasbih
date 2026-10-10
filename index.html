@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مسبحة إلكترونية</title>
+<meta name="description" content="مسبحة إلكترونية بسيطة مع أذكار الصباح والمساء من حصن المسلم — تعمل دون إنترنت.">
+<meta name="theme-color" content="#0b2a22">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="مسبحة">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preload" href="fonts/reemkufi-ar.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="pattern" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="brand">
+    <svg class="star" viewBox="0 0 100 100" aria-hidden="true"><use href="#rub"/></svg>
+    <h1>مِسْبَحَة</h1>
+  </div>
+  <div class="total" title="مجموع كل التسبيحات">
+    <span class="total-label">المجموع</span>
+    <span id="grandTotal" class="total-num">0</span>
+  </div>
+</header>
+
+<main>
+  <!-- ===== Tasbih ===== -->
+  <section id="view-tasbih" class="view active" aria-label="التسبيح">
+    <div class="chips" id="dhikrChips" role="radiogroup" aria-label="اختر الذكر"></div>
+
+    <p class="current-dhikr" id="currentDhikr" aria-live="polite">سُبْحَانَ اللَّهِ</p>
+
+    <div class="targets" role="radiogroup" aria-label="العدد المستهدف">
+      <button class="seg" data-target="33" role="radio">33</button>
+      <button class="seg" data-target="100" role="radio">100</button>
+      <button class="seg" data-target="custom" role="radio">مخصّص</button>
+      <input id="customTarget" class="custom-input" type="number" inputmode="numeric" min="1" max="100000" placeholder="العدد" aria-label="عدد مخصص" hidden>
+    </div>
+
+    <div class="counter-wrap">
+      <button id="tapBtn" class="tap" aria-label="اضغط للتسبيح">
+        <svg class="ring" viewBox="0 0 200 200" aria-hidden="true">
+          <circle class="ring-track" cx="100" cy="100" r="92"/>
+          <circle id="ringProg" class="ring-prog" cx="100" cy="100" r="92"/>
+        </svg>
+        <span class="tap-inner">
+          <span id="count" class="count">0</span>
+          <span class="of">من <span id="targetLabel">33</span></span>
+          <span id="rounds" class="rounds"></span>
+        </span>
+      </button>
+    </div>
+
+    <div class="actions">
+      <button id="resetBtn" class="ghost-btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg>
+        تصفير العدّاد
+      </button>
+    </div>
+  </section>
+
+  <!-- ===== Morning ===== -->
+  <section id="view-morning" class="view" aria-label="أذكار الصباح">
+    <div class="section-head">
+      <div>
+        <h2>أذكار الصباح</h2>
+        <p class="sub">من بعد الفجر إلى طلوع الشمس · <span id="morningProgress"></span></p>
+      </div>
+      <button class="ghost-btn small" data-reset="morning">إعادة</button>
+    </div>
+    <div class="cards" id="morningCards"></div>
+  </section>
+
+  <!-- ===== Evening ===== -->
+  <section id="view-evening" class="view" aria-label="أذكار المساء">
+    <div class="section-head">
+      <div>
+        <h2>أذكار المساء</h2>
+        <p class="sub">من بعد العصر إلى غروب الشمس · <span id="eveningProgress"></span></p>
+      </div>
+      <button class="ghost-btn small" data-reset="evening">إعادة</button>
+    </div>
+    <div class="cards" id="eveningCards"></div>
+  </section>
+
+  <footer class="source">
+    المصدر: كتاب <strong>حصن المسلم</strong> للشيخ سعيد بن علي بن وهف القحطاني — باب أذكار الصباح والمساء، النص منقول من
+    <a href="https://www.hisnmuslim.com/i/ar/27" target="_blank" rel="noopener">hisnmuslim.com</a>.
+  </footer>
+</main>
+
+<nav class="tabs" role="tablist" aria-label="الأقسام">
+  <button class="tab active" data-view="tasbih" role="tab" aria-selected="true">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="17.5" cy="8" r="2"/><circle cx="17.5" cy="15" r="2"/><circle cx="12" cy="18.5" r="2"/><circle cx="6.5" cy="15" r="2"/><circle cx="6.5" cy="8" r="2"/></svg>
+    <span>التسبيح</span>
+  </button>
+  <button class="tab" data-view="morning" role="tab" aria-selected="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="4.5"/><path d="M12 3v3M4.2 6.2l2.1 2.1M19.8 6.2l-2.1 2.1M2 20h20" stroke-width="2" stroke-linecap="round" fill="none" stroke="currentColor"/></svg>
+    <span>الصباح</span>
+  </button>
+  <button class="tab" data-view="evening" role="tab" aria-selected="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 3.2A8.5 8.5 0 1 0 20.8 15 7 7 0 0 1 15.5 3.2z"/></svg>
+    <span>المساء</span>
+  </button>
+</nav>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="rub">
+      <rect x="22" y="22" width="56" height="56" fill="none" stroke="currentColor" stroke-width="5"/>
+      <rect x="22" y="22" width="56" height="56" fill="none" stroke="currentColor" stroke-width="5" transform="rotate(45 50 50)"/>
+      <circle cx="50" cy="50" r="9" fill="currentColor"/>
+    </g>
+  </defs>
+</svg>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
