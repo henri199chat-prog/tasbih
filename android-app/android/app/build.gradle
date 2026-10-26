@@ -1,10 +1,19 @@
 apply plugin: 'com.android.application'
 
-// Release signing: the keystore and its passwords live OUTSIDE the repo.
+// Release signing: the keystore and its passwords live OUTSIDE this public repo, in the
+// private repo henri199chat-prog/app-keys, cloned next to this repo (../app-keys).
 // Override the location with -PtasbihKeystoreProps=/path/to/keystore.properties
-def keystorePropsFile = file(project.findProperty('tasbihKeystoreProps') ?: '/workspace/tasbih-android/keystore/keystore.properties')
+def keystorePropsFile = file(project.findProperty('tasbihKeystoreProps') ?: rootProject.file('../../../app-keys/tasbih/keystore.properties'))
 def keystoreProps = new Properties()
 if (keystorePropsFile.exists()) { keystorePropsFile.withInputStream { keystoreProps.load(it) } }
+
+// A release signed with any other key cannot be installed over the existing app,
+// so refuse to build a release at all when the real key is missing.
+gradle.taskGraph.whenReady { graph ->
+    if (!keystorePropsFile.exists() && graph.allTasks.any { it.project == project && it.name.contains('Release') }) {
+        throw new GradleException("Release keystore not found: ${keystorePropsFile}. Clone the private app-keys repo next to this repo (see README). Never sign a release with a new key.")
+    }
+}
 
 android {
     namespace = "com.henri.tasbih"
@@ -13,8 +22,8 @@ android {
         applicationId "com.henri.tasbih"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0.0"
+        versionCode 2
+        versionName "1.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -25,7 +34,9 @@ android {
     signingConfigs {
         release {
             if (keystorePropsFile.exists()) {
-                storeFile file(keystoreProps['storeFile'])
+                // A relative storeFile is resolved next to keystore.properties.
+                def storeFilePath = new File(keystoreProps['storeFile'])
+                storeFile storeFilePath.isAbsolute() ? storeFilePath : new File(keystorePropsFile.parentFile, keystoreProps['storeFile'])
                 storePassword keystoreProps['storePassword']
                 keyAlias keystoreProps['keyAlias']
                 keyPassword keystoreProps['keyPassword']
